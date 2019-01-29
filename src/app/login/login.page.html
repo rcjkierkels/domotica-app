@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Authorisatie</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form (ngSubmit)="onSubmit()">
+    <ion-input name="username" [(ngModel)]="loginForm.username" placeholder="Gebruikersnaam"></ion-input>
+    <ion-input name="password" [(ngModel)]="loginForm.password" type="password" placeholder="Wachtwoord" pattern="password"></ion-input>
+    <ion-button type="submit" expand="full">Inloggen</ion-button>
+  </form>
+</ion-content>

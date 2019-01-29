@@ -3,37 +3,62 @@ import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { DomoticaService } from './domotica.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html'
 })
 export class AppComponent {
+
   public appPages = [
     {
       title: 'Home',
       url: '/home',
       icon: 'home'
     },
-    {
-      title: 'List',
-      url: '/list',
-      icon: 'list'
-    }
   ];
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    protected domoticaService: DomoticaService,
+    protected router: Router
   ) {
     this.initializeApp();
   }
 
   initializeApp() {
+    const self = this;
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      this.checkAuthentication().then(function() {
+        self.statusBar.styleDefault();
+        self.splashScreen.hide();
+        self.router.navigate(['/home']);
+      }).catch(function() {
+        self.statusBar.styleDefault();
+        self.splashScreen.hide();
+        self.router.navigate(['/login']);
+      });
+    });
+  }
+
+  checkAuthentication() {
+    const self = this;
+
+    return new Promise((resolve, reject) => {
+      this.domoticaService
+          .getAuthToken()
+          .then(function() {
+            self.domoticaService.isAuthenticated =  true;
+            resolve();
+          })
+          .catch(function() {
+            self.domoticaService.isAuthenticated =  false;
+            reject();
+          });
     });
   }
 }
