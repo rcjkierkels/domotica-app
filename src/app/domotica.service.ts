@@ -26,7 +26,7 @@ export class DomoticaService {
 
   }
 
-  protected getAuthToken() {
+  public getAuthToken() {
     return new Promise( (resolve, reject ) => {
       this.storage.get('domotica.api.token').then((token: OAuthToken) => {
         if (!token) {

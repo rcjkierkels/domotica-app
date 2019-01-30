@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { DomoticaService } from './domotica.service';
+import { PushMessageService } from './push-message.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -25,7 +26,8 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     protected domoticaService: DomoticaService,
-    protected router: Router
+    protected router: Router,
+    protected pushMessageService: PushMessageService
   ) {
     this.initializeApp();
   }
@@ -34,9 +36,16 @@ export class AppComponent {
     const self = this;
     this.platform.ready().then(() => {
       this.checkAuthentication().then(function() {
-        self.statusBar.styleDefault();
-        self.splashScreen.hide();
-        self.router.navigate(['/home']);
+        self.pushMessageService.init().then(function() {
+          self.statusBar.styleDefault();
+          self.splashScreen.hide();
+          self.router.navigate(['/home']);
+        }).catch(function(err: string) {
+          console.log(err);
+          self.statusBar.styleDefault();
+          self.splashScreen.hide();
+          self.router.navigate(['/home']);
+        });
       }).catch(function() {
         self.statusBar.styleDefault();
         self.splashScreen.hide();
@@ -44,6 +53,8 @@ export class AppComponent {
       });
     });
   }
+
+
 
   checkAuthentication() {
     const self = this;
