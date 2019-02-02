@@ -10,7 +10,7 @@ import {isNull} from 'util';
 })
 export class DomoticaService {
 
-  protected apiUrl: string = 'http://server.domotica.localhost:12080/';
+  protected apiUrl: string = 'https://domotica2.localtunnel.me/';
   public isAuthenticated: boolean = false;
 
   constructor(
@@ -21,7 +21,6 @@ export class DomoticaService {
   }
 
   doAuthentication(username: string, password: string) {
-
     return this.getAuthTokenFromApi(username, password);
 
   }
@@ -77,7 +76,7 @@ export class DomoticaService {
           'Authorization': token.token_type + ' ' + token.access_token
         });
 
-        this.http.get(this.apiUrl + 'api/jobs', {headers: headers}).subscribe(response => {
+        this.http.get(this.apiUrl + 'api/jobs', {headers: headers}).subscribe((response: any) => {
           resolve(response.data);
         }, err => {
           reject(err);
@@ -110,4 +109,9 @@ export class DomoticaService {
       });
     });
   }
+
+  public logout() {
+    return this.storage.clear();
+  }
+
 }

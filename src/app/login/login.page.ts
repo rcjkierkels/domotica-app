@@ -33,10 +33,12 @@ export class LoginPage implements OnInit {
           .doAuthentication(self.loginForm.username, self.loginForm.password)
           .then(function(data) {
             self.loadingController.dismiss();
+            self.domoticaService.isAuthenticated =  true;
             self.router.navigate(['/home']);
           })
           .catch(function(err) {
             self.loadingController.dismiss();
+            self.domoticaService.isAuthenticated =  false;
             self.presentAlert();
           });
     });

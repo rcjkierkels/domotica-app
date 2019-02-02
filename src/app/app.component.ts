@@ -36,10 +36,12 @@ export class AppComponent {
     const self = this;
     this.platform.ready().then(() => {
       this.checkAuthentication().then(function() {
-        self.pushMessageService.init().then(function() {
-          self.statusBar.styleDefault();
-          self.splashScreen.hide();
-          self.router.navigate(['/home']);
+        self.pushMessageService.init().then(function(identity: any) {
+          self.domoticaService.updateUser({'device_uuid': identity.userId}).then(function() {
+            self.statusBar.styleDefault();
+            self.splashScreen.hide();
+            self.router.navigate(['/home']);
+          });
         }).catch(function(err: string) {
           console.log(err);
           self.statusBar.styleDefault();
@@ -72,4 +74,14 @@ export class AppComponent {
           });
     });
   }
+
+
+  logout() {
+    const self = this;
+
+    this.domoticaService.logout().then(function() {
+      self.router.navigate(['/login']);
+    });
+  }
+
 }
