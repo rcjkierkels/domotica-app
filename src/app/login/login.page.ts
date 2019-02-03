@@ -3,6 +3,7 @@ import { DomoticaService } from '../domotica.service';
 import { LoadingController, AlertController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -36,10 +37,15 @@ export class LoginPage implements OnInit {
             self.domoticaService.isAuthenticated =  true;
             self.router.navigate(['/home']);
           })
-          .catch(function(err) {
+          .catch(function(err: HttpErrorResponse) {
             self.loadingController.dismiss();
             self.domoticaService.isAuthenticated =  false;
-            self.presentAlert();
+            console.log('HELENE: ', err);
+            if (err.status === 400 || err.status === 401) {
+              self.presentAlert();
+            } else {
+              self.presentConnectionIssueAlert();
+            }
           });
     });
 
@@ -60,6 +66,22 @@ export class LoginPage implements OnInit {
       message: 'Please wait',
     });
     return await loading.present();
+  }
+
+  protected async presentConnectionIssueAlert() {
+    const alert = await this.alertController.create({
+      header: 'Connection issue',
+      subHeader: 'Connecting to domotica server failed',
+      message: 'Please check your internet connection. Cannot connect to domotica server on ' + this.domoticaService.apiUrl,
+      buttons:  [{
+        text: 'Retry',
+        handler: () => {
+          this.onSubmit();
+        }
+      }]
+    });
+
+    await alert.present();
   }
 
 }
